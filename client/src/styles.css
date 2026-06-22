@@ -12,6 +12,7 @@
   --glass-hi: rgba(255, 255, 255, 0.06);
   --border: rgba(255, 255, 255, 0.08);
   --border-strong: rgba(255, 255, 255, 0.14);
+  --composer-bg: #161d2f; /* solid input surface (not see-through) */
 
   --text: #f3f4f6;
   --muted: #9ca3af;
@@ -40,6 +41,7 @@
   --bg-3: #dfe4ee;
   --glass: rgba(255, 255, 255, 0.66);
   --glass-2: rgba(255, 255, 255, 0.8);
+  --composer-bg: #ffffff;
   --glass-hi: rgba(15, 23, 42, 0.04);
   --border: rgba(15, 23, 42, 0.1);
   --border-strong: rgba(15, 23, 42, 0.16);
@@ -628,8 +630,7 @@ button { font-family: inherit; cursor: pointer; }
 }
 .composer {
   max-width: 800px; margin: 0 auto;
-  background: var(--glass-2);
-  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  background: var(--composer-bg);
   border: 1px solid var(--border-strong);
   border-radius: 22px;
   box-shadow: var(--depth-lg);

@@ -127,13 +127,17 @@ export default function App() {
     setSettings(null);
   }
 
-  // Auto-scroll only when the user is already near the bottom, so scrolling up
-  // to read earlier messages isn't interrupted while a reply streams in.
+  // Keep the latest text in view. While a reply is streaming we stick to the
+  // bottom so the answer scrolls into view as it's written; otherwise we only
+  // nudge down when the user is already near the bottom, so scrolling up to
+  // read earlier messages isn't interrupted.
   useEffect(() => {
     const el = scrollRef.current;
     if (!el) return;
     const nearBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 120;
-    if (nearBottom) el.scrollTo({ top: el.scrollHeight, behavior: "smooth" });
+    if (streaming || nearBottom) {
+      el.scrollTo({ top: el.scrollHeight, behavior: streaming ? "auto" : "smooth" });
+    }
   }, [messages, streaming]);
 
   async function refresh() {
@@ -387,7 +391,7 @@ export default function App() {
               {showWelcome ? (
                 <div className="welcome">
                   <div className="orb"><SparkIcon size={32} /></div>
-                  <h1>How can I help, Aman?</h1>
+                  <h1>How can I help{user?.username ? `, ${user.username}` : ""}?</h1>
                   <p>
                     Ask anything, drop in a file, or switch on a tool below. Press{" "}
                     <kbd>Enter</kbd> to send · <kbd>Shift</kbd>+<kbd>Enter</kbd> for a new line.
