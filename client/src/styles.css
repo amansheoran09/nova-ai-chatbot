@@ -500,6 +500,11 @@ button { font-family: inherit; cursor: pointer; }
 .bubble {
   padding: 13px 16px; border-radius: 16px; line-height: 1.6;
   border: 1px solid var(--border);
+  max-width: 100%;
+  /* Break long unbreakable strings (URLs, tokens) instead of forcing the
+     bubble wider than the viewport and pushing it off-screen. */
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 .row.ai .bubble {
   background: var(--glass);
@@ -522,11 +527,16 @@ button { font-family: inherit; cursor: pointer; }
 .md h1, .md h2, .md h3 { letter-spacing: -0.2px; }
 .md a { color: #c4b5fd; }
 .md ul, .md ol { padding-left: 20px; }
-.md table { border-collapse: collapse; width: 100%; margin: 8px 0; }
+/* Wide tables scroll horizontally rather than overflowing the message column. */
+.md table {
+  border-collapse: collapse; margin: 8px 0;
+  display: block; width: max-content; max-width: 100%; overflow-x: auto;
+}
 .md th, .md td { border: 1px solid var(--border); padding: 7px 11px; text-align: left; }
 .md :not(pre) > code {
   background: rgba(0, 0, 0, 0.4); padding: 1.5px 6px; border-radius: 6px;
   font-family: "SF Mono", Consolas, monospace; font-size: 13px; color: #e9d5ff;
+  overflow-wrap: anywhere; word-break: break-word;
 }
 
 /* Code artifact card (opens canvas) */
@@ -907,7 +917,10 @@ kbd {
   .canvas { margin: 14px; }
 }
 @media (max-width: 820px) {
-  .app { grid-template-columns: 0px 1fr; }
+  /* Sidebar becomes a fixed overlay below, so it leaves the grid flow.
+     Collapse the shell to a single column so the workspace fills the width
+     instead of dropping into a leftover 0px track. */
+  .app, .app.collapsed { grid-template-columns: 1fr; }
   .sidebar {
     position: fixed; z-index: 60; top: 0; bottom: 0; left: 0; width: min(290px, 84vw);
     margin: 12px; transform: translateX(-110%); transition: transform var(--ease), opacity var(--ease);
@@ -946,5 +959,9 @@ kbd {
 
   /* Scratchpad takes the whole screen on a phone instead of a cramped split. */
   .canvas { margin: 10px; }
+  /* The title + tabs + tools don't fit one line on a phone — let them wrap so
+     the Close button stays on-screen instead of overflowing off the right. */
+  .canvas-head { flex-wrap: wrap; row-gap: 8px; padding: 12px; }
+  .sp-tabs { margin-left: 0; }
   .auth-card { padding: 26px 20px; }
 }
