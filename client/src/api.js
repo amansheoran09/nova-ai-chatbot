@@ -3,6 +3,10 @@
 
 const TOKEN_KEY = "nova_token";
 
+// In production, set VITE_API_URL to the deployed backend's URL.
+// Left empty in dev so requests stay same-origin and use the Vite proxy.
+const BASE = import.meta.env.VITE_API_URL || "";
+
 export const getToken = () => localStorage.getItem(TOKEN_KEY);
 export const setToken = (t) => localStorage.setItem(TOKEN_KEY, t);
 export const clearToken = () => localStorage.removeItem(TOKEN_KEY);
@@ -29,47 +33,47 @@ async function parse(r) {
 // --- Auth ---------------------------------------------------------------
 
 export const signup = (email, password, username) =>
-  fetch("/api/auth/signup", {
+  fetch(BASE + "/api/auth/signup", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email, password, username }),
   }).then(parse);
 
 export const login = (email, password) =>
-  fetch("/api/auth/login", {
+  fetch(BASE + "/api/auth/login", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email, password }),
   }).then(parse);
 
-export const me = () => fetch("/api/auth/me", { headers: authHeaders() }).then(parse);
+export const me = () => fetch(BASE + "/api/auth/me", { headers: authHeaders() }).then(parse);
 
 // --- Conversations ------------------------------------------------------
 
 export const listConversations = () =>
-  fetch("/api/conversations", { headers: authHeaders() }).then(parse);
+  fetch(BASE + "/api/conversations", { headers: authHeaders() }).then(parse);
 
 export const createConversation = () =>
-  fetch("/api/conversations", { method: "POST", headers: authHeaders() }).then(parse);
+  fetch(BASE + "/api/conversations", { method: "POST", headers: authHeaders() }).then(parse);
 
 export const getMessages = (id) =>
-  fetch(`/api/conversations/${id}/messages`, { headers: authHeaders() }).then(parse);
+  fetch(`${BASE}/api/conversations/${id}/messages`, { headers: authHeaders() }).then(parse);
 
 export const renameConversation = (id, title) =>
-  fetch(`/api/conversations/${id}`, {
+  fetch(`${BASE}/api/conversations/${id}`, {
     method: "PATCH",
     headers: authHeaders({ "Content-Type": "application/json" }),
     body: JSON.stringify({ title }),
   }).then(parse);
 
 export const deleteConversation = (id) =>
-  fetch(`/api/conversations/${id}`, { method: "DELETE", headers: authHeaders() }).then(parse);
+  fetch(`${BASE}/api/conversations/${id}`, { method: "DELETE", headers: authHeaders() }).then(parse);
 
 export const getScratchpad = (id) =>
-  fetch(`/api/conversations/${id}/scratchpad`, { headers: authHeaders() }).then(parse);
+  fetch(`${BASE}/api/conversations/${id}/scratchpad`, { headers: authHeaders() }).then(parse);
 
 export const saveScratchpad = (id, content) =>
-  fetch(`/api/conversations/${id}/scratchpad`, {
+  fetch(`${BASE}/api/conversations/${id}/scratchpad`, {
     method: "PUT",
     headers: authHeaders({ "Content-Type": "application/json" }),
     body: JSON.stringify({ content }),
@@ -78,7 +82,7 @@ export const saveScratchpad = (id, content) =>
 // --- Streaming chat -----------------------------------------------------
 
 export async function streamChat(conversationId, message, { model, attachments, onChunk, onDone, onError }) {
-  const res = await fetch(`/api/conversations/${conversationId}/chat`, {
+  const res = await fetch(`${BASE}/api/conversations/${conversationId}/chat`, {
     method: "POST",
     headers: authHeaders({ "Content-Type": "application/json" }),
     body: JSON.stringify({ message, model, attachments }),
